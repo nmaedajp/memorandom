@@ -1,0 +1,2 @@
+ArgumentError: Package GMT not found in current path.
+- Run `import Pkg; Pkg.add("GMT")` to install the GMT package.
