@@ -1,0 +1,40 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/memorandom/libs/highlight/styles/github.min.css"> <link href="/memorandom/css/franklin.css" rel=stylesheet > <link href="/memorandom/css/vela.css" rel=stylesheet > <script src="/memorandom/libs/vela/jquery.min.js"></script> <link rel=icon  href="/memorandom/assets/favicon.png"> <title>Memorandom | Naoki Maeda</title> <div class="main-nav slideout-menu slideout-menu-left" id=menu > <div class=flex-container > <span class=sidebar-brand > <h3 style='font-size: 25px'>Vela Template</h3> </span> </div> <nav class=sidebar-nav > <ul class=metismenu  id=metismenu  > <li><a href="/memorandom/index.html">Home</a> <li><a href="" class=has-arrow >julia</a> <ul> <li><a href="/memorandom/jl2412/">2024年12月</a> <li><a href="/memorandom/jl2411/">2024年11月</a> </ul> <li><a href="" class=has-arrow >GMT</a> <ul> <li><a href="/memorandom/gmt2412/">2024年12月</a> <li><a href="/memorandom/gmt2411/">2024年11月</a> </ul> <li><a href="" class=has-arrow >LaTeX</a> <ul> <li><a href="/memorandom/tex2412/">2024年12月</a> </ul> <li><a href="" class=has-arrow >Memo</a> <ul> <li><a href="/memorandom/memo2412/">2024年12月</a> <li><a href="/memorandom/memo2411/">2024年11月</a> </ul> <li><a href="/memorandom/tags/">Tags</a> </ul> </nav> </div> <main id=panel  class="slidout-panel slideout-panel-left"> <div class="toggle-button hamburger hamburger--spin"> <div class=hamburger-box > <div class=hamburger-inner ></div> </div> </div> <h1 class="page title">Memo 202411</h1> <hr> <div class=franklin-content > <div class=franklin-toc ><ol><li><a href="#20241130">20241130</a><ol><li><a href="#fftw">FFTW</a><ol><li><a href="#code">code</a></ol><li><a href="#結果">結果</a></ol></ol></div> <h1 id=20241130 ><a href="#20241130" class=header-anchor >20241130</a></h1> <h2 id=fftw ><a href="#fftw" class=header-anchor >FFTW</a></h2> <ul> <li><p>FFTW では，2の累乗でなくとも，fft を実行することができる．</p> <li><p>1000と1024，2000と2048，4000と4096のケースについて確認した．</p> <li><p>julia 1.11.1</p> <li><p>実行は2024年11月30日</p> </ul> <h3 id=code ><a href="#code" class=header-anchor >code</a></h3> <pre><code class="julia hljs"><span class=hljs-keyword >using</span> FFTW, BenchmarkTools, Random
+<span class=hljs-comment ># Random seed</span>
+nrp = <span class=hljs-number >100</span>
+n1 = <span class=hljs-number >1000</span>; n2 = <span class=hljs-number >1024</span>
+Random.seed!(<span class=hljs-number >20241130</span>)
+<span class=hljs-meta >@benchmark</span> <span class=hljs-keyword >for</span> i = <span class=hljs-number >1</span>:nrp
+    x1 = randn(n1)
+    z1 = fft(x1)
+<span class=hljs-keyword >end</span>
+Random.seed!(<span class=hljs-number >20241130</span>)
+<span class=hljs-meta >@benchmark</span> <span class=hljs-keyword >for</span> i = <span class=hljs-number >1</span>:nrp
+    x2 = randn(n2)
+    z2 = fft(x2);
+<span class=hljs-keyword >end</span>
+
+nrp = <span class=hljs-number >50</span>
+n1 = <span class=hljs-number >2000</span>; n2 = <span class=hljs-number >2048</span>
+Random.seed!(<span class=hljs-number >20241130</span>)
+<span class=hljs-meta >@benchmark</span> <span class=hljs-keyword >for</span> i = <span class=hljs-number >1</span>:nrp
+    x1 = randn(n1)
+    z1 = fft(x1)
+<span class=hljs-keyword >end</span>
+Random.seed!(<span class=hljs-number >20241130</span>)
+<span class=hljs-meta >@benchmark</span> <span class=hljs-keyword >for</span> i = <span class=hljs-number >1</span>:nrp
+    x2 = randn(n2)
+    z2 = fft(x2);
+<span class=hljs-keyword >end</span>
+
+nrp = <span class=hljs-number >25</span>
+n1 = <span class=hljs-number >4000</span>; n2 = <span class=hljs-number >4096</span>
+Random.seed!(<span class=hljs-number >20241130</span>)
+<span class=hljs-meta >@benchmark</span> <span class=hljs-keyword >for</span> i = <span class=hljs-number >1</span>:nrp
+    x1 = randn(n1)
+    z1 = fft(x1)
+<span class=hljs-keyword >end</span>
+Random.seed!(<span class=hljs-number >20241130</span>)
+<span class=hljs-meta >@benchmark</span> <span class=hljs-keyword >for</span> i = <span class=hljs-number >1</span>:nrp
+    x2 = randn(n2)
+    z2 = fft(x2);
+<span class=hljs-keyword >end</span></code></pre> <h3 id="結果"><a href="#結果" class=header-anchor >結果</a></h3> <ul> <li><p>1000 対 1024</p> </ul> <table><tr><th align=right >マシン名<th align=center >1000<th align=center >1024<th align=center >1024/1000<th align=center >1000/1024<tr><td align=right >bido-mini2<td align=center >1.100 ms ± 235.466 μs<td align=center >800.259 μs ± 235.190 μs<td align=center >0.728<td align=center >1.375<tr><td align=right >clarify<td align=center >1.534 ms ± 308.121 μs<td align=center >1.056 ms ± 311.561 μs<td align=center >0.688<td align=center >1.453<tr><td align=right >ambient<td align=center >1.705 ms ± 440.955 μs<td align=center >1.273 ms ± 460.938 μs<td align=center >0.747<td align=center >1.339</table> <ul> <li><p>2000 対 2048</p> </ul> <table><tr><th align=right >マシン名<th align=right >2000<th align=right >2048<th align=right >2048/2000<th align=right >2000/2048<tr><td align=right >bido-mini2<td align=right >830.434 μs ± 185.242 μs<td align=right >692.092 μs ± 183.994 μs<td align=right >0.833<td align=right >1.120<tr><td align=right >clarify<td align=right >1.131 ms ± 269.036 μs<td align=right >904.263 μs ± 244.804 μs<td align=right >0.800<td align=right >1.251<tr><td align=right >ambient<td align=right >1.273 ms ± 460.938 μs<td align=right >1.053 ms ± 365.747 μs<td align=right >0.827<td align=right >1.209</table> <ul> <li><p>4000 対 4096</p> </ul> <table><tr><th align=right >マシン名<th align=right >4000<th align=right >4096<th align=right >4096/4000<th align=right >4000/4096<tr><td align=right >bido-mini2<td align=right >768.332 μs ± 302.276 μs<td align=right >716.150 μs ± 343.610 μs<td align=right >0.932<td align=right >1.073<tr><td align=right >clarify<td align=right >970.663 μs ± 256.749 μs<td align=right >822.391 μs ± 261.223 μs<td align=right >0.847<td align=right >1.180<tr><td align=right >ambient<td align=right >1.155 ms ± 511.098 μs<td align=right >1.005 ms ± 546.089 μs<td align=right >0.870<td align=right >1.149</table> <div class=page-foot > <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> Naoki Maeda. Last modified: December 11, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>. </div> </div> </main> <script src="/memorandom/libs/vela/metisMenu.min.js"></script> <script src="/memorandom/libs/vela/slideout.min.js"></script> <script src="/memorandom/libs/highlight/highlight.min.js"></script> <script>hljs.highlightAll();hljs.configure({tabReplace: ' '});</script>

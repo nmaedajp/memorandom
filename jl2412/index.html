@@ -1,0 +1,27 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/memorandom/libs/highlight/styles/github.min.css"> <link href="/memorandom/css/franklin.css" rel=stylesheet > <link href="/memorandom/css/vela.css" rel=stylesheet > <script src="/memorandom/libs/vela/jquery.min.js"></script> <link rel=icon  href="/memorandom/assets/favicon.png"> <title>Memorandom | Naoki Maeda</title> <div class="main-nav slideout-menu slideout-menu-left" id=menu > <div class=flex-container > <span class=sidebar-brand > <h3 style='font-size: 25px'>Vela Template</h3> </span> </div> <nav class=sidebar-nav > <ul class=metismenu  id=metismenu  > <li><a href="/memorandom/index.html">Home</a> <li><a href="" class=has-arrow >julia</a> <ul> <li><a href="/memorandom/jl2412/">2024年12月</a> <li><a href="/memorandom/jl2411/">2024年11月</a> </ul> <li><a href="" class=has-arrow >GMT</a> <ul> <li><a href="/memorandom/gmt2412/">2024年12月</a> <li><a href="/memorandom/gmt2411/">2024年11月</a> </ul> <li><a href="" class=has-arrow >LaTeX</a> <ul> <li><a href="/memorandom/tex2412/">2024年12月</a> </ul> <li><a href="" class=has-arrow >Memo</a> <ul> <li><a href="/memorandom/memo2412/">2024年12月</a> <li><a href="/memorandom/memo2411/">2024年11月</a> </ul> <li><a href="/memorandom/tags/">Tags</a> </ul> </nav> </div> <main id=panel  class="slidout-panel slideout-panel-left"> <div class="toggle-button hamburger hamburger--spin"> <div class=hamburger-box > <div class=hamburger-inner ></div> </div> </div> <h1 class="page title">julia 202412</h1> <hr> <div class=franklin-content > <div class=franklin-toc ><ol><li><a href="#20241209">20241209</a><ol><li><a href="#fourpwr_のテスト">FourPwr のテスト</a></ol><li><a href="#20241208">20241208</a><ol><li><a href="#filter">filter</a></ol></ol></div> <h1 id=20241209 ><a href="#20241209" class=header-anchor >20241209</a></h1> <h2 id="fourpwr_のテスト"><a href="#fourpwr_のテスト" class=header-anchor >FourPwr のテスト</a></h2> <p><code>FourPwr</code> は，<code>FFTGrp</code> 内のパッケージ． Fourier変換とパワースペクトルを計算する．</p> <p>元は，<code>FourPwrAutoCo</code>．こちらは，Fourier変換，パワースペクトル，自己相関関数，自己相関係数を計算する．</p> <p>自己相関関数，自己相関係数が不要のときもあるので， 省いた版が<code>FourPwr</code></p> <pre><code class="julia hljs"><span class=hljs-keyword >using</span> FFTW
+<span class=hljs-keyword >using</span> FFTGrp
+<span class=hljs-keyword >using</span> Random
+N = <span class=hljs-number >16</span>; L = <span class=hljs-number >16</span>; M = <span class=hljs-number >16</span>; nch = <span class=hljs-number >1</span>;
+hz = <span class=hljs-number >0.5</span>
+Random.seed!(<span class=hljs-number >20241209</span>)
+x = randn(N)
+(kai, k1, k2) = kukan(N, L, M)
+Ck = FFTkukan(x, L, nch, kai, k1, k2)
+(Xf, Pf, Cxx, Rxx) = FourPwrAutoCo(Ck, N, nch, kai, hz)
+(Xf2, Pf2) = FourPwr(Ck, L, hz)
+<span class=hljs-meta >@show</span> Xf
+<span class=hljs-meta >@show</span> Xf2
+<span class=hljs-meta >@show</span> Pf
+<span class=hljs-meta >@show</span> Pf2;</code></pre> <pre><code class="plaintext hljs">ArgumentError: Package FFTW not found in current path.
+- Run `import Pkg; Pkg.add(&quot;FFTW&quot;)` to install the FFTW package.
+</code></pre> <p>XfとXf2，PfとPf2が同じならOK！</p> <h1 id=20241208 ><a href="#20241208" class=header-anchor >20241208</a></h1> <h2 id=filter ><a href="#filter" class=header-anchor >filter</a></h2> <ul> <li><p>例えば，NaNが含まれているときに，NaN を省きたいとき．</p> </ul> <pre><code class="julia hljs">x = [<span class=hljs-number >1</span>, <span class=hljs-number >2</span>, <span class=hljs-literal >NaN</span>, <span class=hljs-number >3</span>, <span class=hljs-number >4</span>, <span class=hljs-number >5</span>, <span class=hljs-number >6</span>]
+y = filter(!isnan, x)
+<span class=hljs-meta >@show</span> x
+<span class=hljs-meta >@show</span> y</code></pre> <pre><code class="plaintext hljs">x = [1.0, 2.0, NaN, 3.0, 4.0, 5.0, 6.0]
+y = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+</code></pre> <ul> <li><p>2より大きい数のみを取り出す場合．</p> </ul> <pre><code class="julia hljs">x = [<span class=hljs-number >1</span>, <span class=hljs-number >2</span>, <span class=hljs-literal >NaN</span>, <span class=hljs-number >3</span>, <span class=hljs-number >4</span>, <span class=hljs-number >5</span>, <span class=hljs-number >6</span>]
+y = filter(x -&gt; x &gt; <span class=hljs-number >2</span>, x)
+<span class=hljs-meta >@show</span> x
+<span class=hljs-meta >@show</span> y</code></pre> <pre><code class="plaintext hljs">x = [1.0, 2.0, NaN, 3.0, 4.0, 5.0, 6.0]
+y = [3.0, 4.0, 5.0, 6.0]
+</code></pre> <div class=migi ><a href="/memorandom/jl2411/">2024年11月</a> ← <a href="/memorandom/">Home</a></div> <div class=page-foot > <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> Naoki Maeda. Last modified: December 11, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>. </div> </div> </main> <script src="/memorandom/libs/vela/metisMenu.min.js"></script> <script src="/memorandom/libs/vela/slideout.min.js"></script> <script src="/memorandom/libs/highlight/highlight.min.js"></script> <script>hljs.highlightAll();hljs.configure({tabReplace: ' '});</script>
